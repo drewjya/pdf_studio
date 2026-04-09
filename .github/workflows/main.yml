@@ -22,16 +22,6 @@ jobs:
         
       - name: Build App
         run: bun run electrobun build --env=stable
-        
-      # FIX 1: Manually zip the Mac app preserving symlinks (-y)
-      - name: Zip Mac App Bundle
-        if: matrix.os == 'macos-latest'
-        run: |
-          cd artifacts
-          # -r = recursive, -y = preserve symlinks, -q = quiet
-          zip -ryq Mac-App-Bundle.zip *.app
-          # Remove the raw unzipped app so the artifact uploader doesn't grab it
-          rm -rf *.app
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
