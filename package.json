@@ -1,12 +1,19 @@
 {
   "name": "pdfstudio",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Simple app to add watermark, numbering and merging pdf files",
   "scripts": {
-    "start": "electrobun dev",
-    "build": "electrobun build",
-    "build:stable": "electrobun build --env=stable",
-    "release": "bun run build:stable"
+    "start": "vite build && electrobun dev",
+    "dev": "electrobun dev --watch",
+    "dev:hmr": "bun scripts/sync-version.ts && concurrently \"bun run hmr\" \"bun run start\"",
+    "hmr": "vite --port 5173",
+    "build:canary": "vite build && electrobun build --env=canary && bun scripts/post-build.ts",
+    "build:stable": "vite build && electrobun build --env=stable && bun scripts/post-build.ts",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "typecheck": "bash scripts/typecheck.sh",
+    "lint": "bun run typecheck && bun test && bun run scripts/validate-i18n.ts"
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.6.5",
