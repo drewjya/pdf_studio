@@ -64,7 +64,15 @@ jobs:
 
       - name: Build NSIS Installer (Windows)
         if: matrix.platform == 'win'
-        run: electrobun-builder build --target nsis
+        shell: bash
+        run: |
+          echo "Current directory is:"
+          pwd
+          
+          echo "Directory contents:"
+          ls -la
+          
+          electrobun-builder build --target nsis
 
       - name: List artifacts
         shell: bash
