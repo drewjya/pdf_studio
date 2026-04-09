@@ -1,6 +1,6 @@
 name: Build Internal Apps
 on: 
-  workflow_dispatch: # Allows manual trigger
+  workflow_dispatch:
   push:
     branches: [main]
 
@@ -21,12 +21,20 @@ jobs:
         run: bun install
         
       - name: Build App
-        # Building for "stable" or "canary" creates distribution-ready files
         run: bun run electrobun build --env=stable
         
+      # FIX 1: Manually zip the Mac app preserving symlinks (-y)
+      - name: Zip Mac App Bundle
+        if: matrix.os == 'macos-latest'
+        run: |
+          cd artifacts
+          # -r = recursive, -y = preserve symlinks, -q = quiet
+          zip -ryq Mac-App-Bundle.zip *.app
+          # Remove the raw unzipped app so the artifact uploader doesn't grab it
+          rm -rf *.app
+          
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Electrobun-App-${{ matrix.os }}
-          # Electrobun places build outputs in a flat 'artifacts/' folder
           path: artifacts/
