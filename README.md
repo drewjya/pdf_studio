@@ -1,6 +1,6 @@
 # PDF Stuido
 
-A fast Electrobun desktop app template with React, Tailwind CSS, and Vite for hot module replacement (HMR).
+A fast Electrobun desktop app for helping manage pdf files.
 
 ## Getting Started
 
