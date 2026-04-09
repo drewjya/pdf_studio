@@ -42,10 +42,6 @@ jobs:
         if: matrix.platform == 'win'
         run: choco install nsis -y
 
-      - name: Install Electrobun Builder for Windows
-        if: matrix.platform == 'win'
-        run: bun install -g electrobun-builder-for-windows
-
       - name: Sync version from tag
         shell: bash
         run: |
@@ -61,18 +57,6 @@ jobs:
 
       - name: Build
         run: bun run build:stable
-
-      - name: Build NSIS Installer (Windows)
-        if: matrix.platform == 'win'
-        shell: bash
-        run: |
-          echo "Current directory is:"
-          pwd
-          
-          echo "Directory contents:"
-          ls -la
-          
-          electrobun-builder build --target nsis
 
       - name: List artifacts
         shell: bash
@@ -126,5 +110,5 @@ jobs:
             --repo="${{ github.repository }}" \
             --title="PdfStudio $TAG" \
             --generate-notes \
-            release-artifacts/stable-macos-arm64-PdfStudio.dmg \
-            release-artifacts/stable-win-x64-PdfStudio-Setup.exe
+            release-artifacts/macos-arm64-PdfStudio.dmg \
+            release-artifacts/win-x64-PdfStudio-Setup.exe
