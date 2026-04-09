@@ -15,7 +15,7 @@ export const pdfRpc = BrowserView.defineRPC<PdfRPC>({
           startingFolder: join(homedir(), "Desktop"),
           allowedFileTypes: "pdf",
           canChooseFiles: true,
-          canChooseDirectory: true,
+          canChooseDirectory: false,
           allowsMultipleSelection: true,
         });
         return result;
