@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { ListOrdered, Copy, Archive, Loader2 } from "lucide-react";
 import { electrobun } from "../composables/rpcHandler";
+import { useToastStore } from "../store/useToastStore";
 
 export const NumberingView = () => {
   const { numberingFiles, setNumberingFiles, numConfig, updateNumConfig } =
     useAppStore();
   const [isProcessing, setIsProcessing] = useState(false);
+  const addToast = useToastStore((state) => state.addToast);
 
   // 1. Native OS File Picker Trigger
   const triggerNativeFilePicker = async () => {
@@ -45,11 +47,11 @@ export const NumberingView = () => {
         config: numConfig, // Passing the config so you can use it in your Bun backend!
       } as any);
 
-      alert(`Success! Numbered PDFs saved to:\n${dir}`);
+      addToast(`Success! Numbered PDFs saved to:\n${dir}`, 'success');
       setNumberingFiles([]); // Clear queue on success
     } catch (error) {
       console.error("Numbering failed:", error);
-      alert("Failed to apply page numbers. Check console for details.");
+      addToast("Failed to apply page numbers. Check console for details.", 'error');
     } finally {
       setIsProcessing(false);
     }
