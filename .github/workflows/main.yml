@@ -1,0 +1,32 @@
+name: Build Internal Apps
+on: 
+  workflow_dispatch: # Allows manual trigger
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        
+      - name: Install Dependencies
+        run: bun install
+        
+      - name: Build App
+        # Building for "stable" or "canary" creates distribution-ready files
+        run: bun run electrobun build --env=stable
+        
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Electrobun-App-${{ matrix.os }}
+          # Electrobun places build outputs in a flat 'artifacts/' folder
+          path: artifacts/
