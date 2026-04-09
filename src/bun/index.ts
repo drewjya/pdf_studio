@@ -25,7 +25,7 @@ async function getMainViewUrl(): Promise<string> {
 const url = await getMainViewUrl();
 
 const mainWindow = new BrowserWindow({
-  title: "PDF Studio",
+  title: "PdfStudio",
   url,
   rpc: pdfRpc,
   frame: {

@@ -48,7 +48,7 @@ export const Layout = () => {
               <FileBox className="w-5 h-5" />
             </div>
             <span className="font-bold text-lg tracking-tight text-slate-900 truncate">
-              PDF Studio
+              PdfStudio
             </span>
           </div>
 

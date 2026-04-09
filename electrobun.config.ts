@@ -2,26 +2,37 @@ import type { ElectrobunConfig } from "electrobun";
 
 export default {
   app: {
-    name: "PDF Studio",
-    identifier: "dev.drewjya.pdf_studio",
+    name: "PdfStudio",
+    identifier: "com.drewjya.pdf_studio",
     version: "0.0.1",
   },
   build: {
-    // Vite builds to dist/, we copy from there
+    bun: {
+      entrypoint: "src/bun/index.ts",
+    },
+    views: {
+      mainview: {
+        entrypoint: "src/renderer/script.ts",
+      },
+    },
     copy: {
       "dist/index.html": "views/mainview/index.html",
       "dist/assets": "views/mainview/assets",
     },
-    // Ignore Vite output in watch mode — HMR handles view rebuilds separately
     watchIgnore: ["dist/**"],
     mac: {
       bundleCEF: false,
     },
     linux: {
       bundleCEF: false,
+      icon: "icon.iconset/icon_256x256.png",
     },
     win: {
       bundleCEF: false,
+      icon: "icon.iconset/icon.ico",
     },
+  },
+  runtime: {
+    exitOnLastWindowClosed: true,
   },
 } satisfies ElectrobunConfig;
