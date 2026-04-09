@@ -3,7 +3,7 @@ import type { ElectrobunConfig } from "electrobun";
 export default {
   app: {
     name: "PdfStudio",
-    identifier: "com.drewjya.pdf_studio",
+    identifier: "com.drewjya.pdfstudio",
     version: "0.0.1",
   },
   build: {
