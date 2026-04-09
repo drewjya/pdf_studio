@@ -1,7 +1,9 @@
 # PDF Stuido
 
 A fast Electrobun desktop app for helping manage pdf files.
-
+- Merge
+- Watermark
+- Numbering
 ## Getting Started
 
 ```bash
