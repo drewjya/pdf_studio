@@ -61,13 +61,13 @@ jobs:
 
       - name: Build
         shell: bash
-        run: |
-          # Run the standard build first
-          bun run build:stable
+        run: |  
           
           # If we are on Windows, use the new package to build the NSIS installer
           if [ "${{ matrix.platform }}" == "win" ]; then
             electrobun-builder build --target nsis
+          else
+            bun run build:stable
           fi
 
       - name: List artifacts
