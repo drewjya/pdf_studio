@@ -1,32 +1,102 @@
-name: Build Internal Apps
-on: 
-  workflow_dispatch: # Allows manual trigger
+name: Release
+
+on:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    
+  build-linux:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        
-      - name: Install Dependencies
-        run: bun install
-        
-      - name: Build App
-        # Building for "stable" or "canary" creates distribution-ready files
-        run: bun run electrobun build --env=stable
-        
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          name: Electrobun-App-${{ matrix.os }}
-          # Electrobun places build outputs in a flat 'artifacts/' folder
-          path: artifacts/
+          bun-version: latest
+      - run: bun install
+      - run: bunx electrobun build --env=stable
+      - name: List artifacts
+        run: ls -la artifacts/
+      - name: Wrap installer with setup script
+        run: |
+          tar -xzf artifacts/stable-linux-*-Setup.tar.gz ./installer
+          chmod +x installer
+          cp scripts/linux-install-template.sh CBX-Tool-Linux.sh
+          LINES=$(wc -l < CBX-Tool-Linux.sh)
+          LINES=$((LINES + 1))
+          sed -i "s/__LINES__/$LINES/" CBX-Tool-Linux.sh
+          base64 -w 0 installer >> CBX-Tool-Linux.sh
+          chmod +x CBX-Tool-Linux.sh
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: CBX-Tool-Linux.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    runs-on: macos-14
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bunx electrobun build --env=stable
+      - name: List artifacts
+        run: ls -la artifacts/ && find build/ -type f
+      - name: Create DMG
+        run: |
+          APP=$(find build/stable-macos-*/ -maxdepth 1 -name "*.app" -type d | head -1)
+          echo "=== Found: $APP ==="
+          # Create staging folder with app + Applications symlink for drag-install UX
+          mkdir dmg-staging
+          cp -r "$APP" dmg-staging/
+          ln -s /Applications dmg-staging/Applications
+          hdiutil create -volname "CBX Tool" -srcfolder dmg-staging -ov -format UDZO CBX-Tool-macOS.dmg
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: CBX-Tool-macOS.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bunx electrobun build --env=stable
+      - name: List artifacts
+        shell: pwsh
+        run: Get-ChildItem artifacts/ -Recurse
+      - name: Install NSIS
+        run: choco install nsis -y --no-progress
+
+      - name: Build single-file installer (NSIS)
+        shell: pwsh
+        run: |
+          $src = Get-ChildItem artifacts/ -Filter "*Setup.zip" | Select-Object -First 1
+          Write-Host "=== Using: $($src.FullName) ==="
+
+          & "C:\Program Files\7-Zip\7z.exe" x $src.FullName -o"setup_extracted"
+
+          $iconSrc = "$env:GITHUB_WORKSPACE\resources\icon.ico"
+          Write-Host "=== Icon source: $iconSrc (exists: $(Test-Path $iconSrc)) ==="
+          Copy-Item $iconSrc installer-icon.ico
+
+          Copy-Item scripts/installer.nsi installer.nsi
+          & "C:\Program Files (x86)\NSIS\makensis.exe" /DICON_PATH=installer-icon.ico installer.nsi
+          Write-Host "=== Created: $(Get-Item CBX-Tool-Windows.exe | Select-Object Name, Length) ==="
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: CBX-Tool-Windows.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
