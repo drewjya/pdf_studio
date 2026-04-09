@@ -5,16 +5,9 @@ export default {
     name: "PdfStudio",
     identifier: "com.drewjya.pdfstudio",
     version: "0.0.1",
+    urlSchemes: ["pdfstudio"],
   },
   build: {
-    bun: {
-      entrypoint: "src/bun/index.ts",
-    },
-    views: {
-      mainview: {
-        entrypoint: "src/renderer/script.ts",
-      },
-    },
     copy: {
       "dist/index.html": "views/mainview/index.html",
       "dist/assets": "views/mainview/assets",
@@ -33,6 +26,6 @@ export default {
     },
   },
   runtime: {
-    exitOnLastWindowClosed: true,
+    generatePatch: false,
   },
 } satisfies ElectrobunConfig;

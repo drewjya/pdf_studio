@@ -60,15 +60,11 @@ jobs:
           rm -f electrobun.config.ts.bak
 
       - name: Build
-        shell: bash
-        run: |  
-          
-          # If we are on Windows, use the new package to build the NSIS installer
-          if [ "${{ matrix.platform }}" == "win" ]; then
-            electrobun-builder build --target nsis
-          else
-            bun run build:stable
-          fi
+        run: bun run build:stable
+
+      - name: Build NSIS Installer (Windows)
+        if: matrix.platform == 'win'
+        run: electrobun-builder build --target nsis
 
       - name: List artifacts
         shell: bash
