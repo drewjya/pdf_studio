@@ -85,9 +85,9 @@ cat > "$WRAPPER_APP/Contents/Info.plist" << 'PLIST_EOF'
     <key>CFBundleDisplayName</key>
     <string>PdfStudio</string>
     <key>CFBundleVersion</key>
-    <string>0.1.0</string>
+    <string>0.1.5</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.1.0</string>
+    <string>0.1.5</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSUIElement</key>

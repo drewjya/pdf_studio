@@ -24,7 +24,7 @@ if (process.platform === 'win32') {
 
   // Config (must match electrobun.config.ts top-level fields)
   const appName = 'PdfStudio';
-  const appVersion = '0.1.0';
+  const appVersion = '0.1.5';
   const appAuthor = 'PdfStudio';
   const projectRoot = resolve('.');
   const buildRoot = resolve('build', 'stable-win-x64');
